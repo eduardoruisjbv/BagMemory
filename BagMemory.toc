@@ -1,0 +1,21 @@
+## Interface: 120100
+## Title: BagMemory
+## Notes: Clean bags. Your best gear, preserved.
+## Notes-ptBR: Bag limpa. Seu melhor equipamento, preservado.
+## Author: Eduardo Rui
+## Version: 0.3.0
+## SavedVariables: BagMemoryDB
+## IconTexture: Interface\Icons\INV_Misc_Bag_08
+
+Locale.lua
+Core.lua
+ClassRules.lua
+Inventory.lua
+Rules.lua
+Bank.lua
+Quests.lua
+Merchant.lua
+Simulate.lua
+Market.lua
+Bags.lua
+UI.lua
