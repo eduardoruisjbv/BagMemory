@@ -94,6 +94,18 @@ function BM:Classify(item)
     if item.quality>=5 then return "keep",L["Lendário, artefato ou item especial"] end
     if item.questUnknown then return "review",L["Dados de missão não confirmados"] end
     if item.tooltipUnknown then return "review",L["Descrição do item não confirmada; missão ou utilidade pode estar pendente"] end
+    -- Poor-quality (gray) items are the game's own junk: the vendor's "Sell junk" button takes all
+    -- of them, so they are sold here too, ahead of the appearance, upgrade and category checks
+    -- (those protect useful gear, never junk). The hard protections still apply: manual rules,
+    -- Warband/account binding, saved equipment sets, special binding and anything locked or
+    -- worthless. Only bag items are sold this way.
+    if item.quality==0 and item.storage=="bag" and type(item.sellPrice)=="number" and item.sellPrice>0
+        and not item.locked and not item.noValue and not item.specialBinding
+        and self.config.rules[item.id]~="keep" and self.config.rules[item.id]~="bank"
+        and not ((item.account or item.warband) and not self.config.allowWarbandSale)
+        and not (self.setItems and self.setItems[item.id]) then
+        return "sell",L["Lixo cinza: o mesmo que o botão de lixo do vendedor"]
+    end
     if item.refundable==nil or item.bound==nil then return "review",L["Vínculo ou reembolso não confirmado"] end
     if item.refundable then return "keep",L["Ainda pode ser reembolsado"] end
     if self.config.rules[item.id]=="keep" then return "keep",L["Proteção manual neste personagem"] end

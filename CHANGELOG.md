@@ -1,3 +1,19 @@
+# 0.4.0 — Gray junk and identical copies
+
+- **Gray junk is always sold.** Poor-quality items in the bags are sold the same way the vendor's "Sell junk" button does, ahead of the appearance, upgrade and category checks (those protect useful gear, never junk). The hard protections still apply: quest items, heirlooms, manual keep/bank rules, Warband/account-bound items (unless allowed), saved equipment sets, special bindings, locked or worthless items. Items whose tooltip data is unconfirmed still go to review.
+- **Identical copies: the dearer one is sold.** When two items have exactly the same item level and stats, only the cheaper copies (as many as the slot needs) stay protected as "best of the category"; the more expensive copy follows the ordinary sale rules, so it is the one that fetches more gold. It needs a gap of at least 1 silver. Works together with GearMemory 0.3.0-beta, which wears the cheaper twin when the equipped copy is the dearer one.
+- Validation: offline simulations only (junk rules and twin logic); in-client validation is ongoing.
+
+# 0.3.0 — English interface, smarter PvP and bank handling
+
+- **English and Portuguese.** The interface, messages and tooltips follow the client language (Portuguese for ptBR, English for every other client). New English commands: `/bm simulate`, `/bm simulate all`, `/bm diagnostics`, `/bm sell`, `/bm bank` (the Portuguese ones still work).
+- **Dry run.** `/bm simulate` lists what would be sold and why, without selling anything. Item tooltips now show BagMemory's decision and reason.
+- **PvP is judged on its own.** PvP gear is compared only with PvP gear at its effective (post-buff) item level, and PvE only with PvE. A piece is protected only when it is close to the best of its slot, not to the character average. A PvP item whose scaling cannot be read no longer blocks the rest of its category.
+- **Tier and equipment sets.** Set pieces and pieces of saved equipment sets lose their protection once they fall more than 25 effective item levels behind the best of the slot. Crafted gear is never sold, because it can be recrafted.
+- **Older content.** Consumables, spare bags, miscellaneous goods and common materials from previous expansions are now sold when the vendor pays for them. PvP consumables, mounts, pets and toys are kept.
+- **Bank.** The bank is read again whenever it opens or the tab changes, including the Warband bank. Items marked for the bank are deposited only into the character bank, and items that should be sold are withdrawn from the active tab. Bank decisions are logged for diagnosis.
+- **Auction House.** BagMemory no longer queries the Auction House on its own. Items marked for the AH are tinted yellow so you can list them by hand.
+
 # 0.2.5 — Análise ao abrir bolsas
 
 - Ouvintes de mudanças de inventário, carregamento de dados e equipamento são registrados somente enquanto uma bolsa nativa está aberta e desligados ao fechar a última bolsa.

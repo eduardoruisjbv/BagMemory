@@ -87,6 +87,7 @@ local english = {
     ["Comparação incompleta; aguarde os dados dos equipamentos"] = "Incomplete comparison; wait for the gear data",
     ["Entre os melhores da categoria em PvP (ilvl efetivo)"] = "Among the best of its category in PvP (effective ilvl)",
     ["Entre os melhores da categoria em PvE"] = "Among the best of its category in PvE",
+    ["Lixo cinza: o mesmo que o botão de lixo do vendedor"] = "Gray junk: the same the vendor's Sell junk button takes",
     ["Peça de conjunto: bônus pode ser útil"] = "Set piece: the bonus may be useful",
     ["Berloque: efeitos precisam de comparação manual"] = "Trinket: effects need a manual comparison",
     ["Coleta da aparência não confirmada"] = "Appearance collection not confirmed",

@@ -3,7 +3,7 @@
 ## Notes: Clean bags. Your best gear, preserved.
 ## Notes-ptBR: Bag limpa. Seu melhor equipamento, preservado.
 ## Author: Eduardo Rui
-## Version: 0.3.0
+## Version: 0.4.0
 ## SavedVariables: BagMemoryDB
 ## IconTexture: Interface\Icons\INV_Misc_Bag_08
 

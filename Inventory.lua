@@ -150,6 +150,58 @@ function BM:ReadItem(link, location, bag, slot, inventorySlot, container)
     return item
 end
 
+-- Two items are exact twins when they have the same level and the same stats: wearing one or
+-- the other changes nothing. Returns nil when the stats cannot be read.
+function BM:PowerKey(item, level)
+    if type(item.stats)~="table" or next(item.stats)==nil then return nil end
+    local keys={}
+    for stat,value in pairs(item.stats) do
+        if type(value)~="number" then return nil end
+        keys[#keys+1]=stat
+    end
+    table.sort(keys)
+    local parts={tostring(level),tostring(item.subclass),tostring(item.equipLoc),tostring(item.setID or 0)}
+    for _,stat in ipairs(keys) do parts[#parts+1]=stat.."="..item.stats[stat] end
+    return table.concat(parts,"|")
+end
+
+-- Among exact twins only the cheapest ones (as many as the slot needs) stay protected as "best of
+-- the category". The dearer copies fall through to the ordinary sale rules, so the copy that
+-- fetches more gold is the one that gets sold. Needs a clear gap (1 silver) to act.
+local TWIN_MIN_GAP=100
+function BM:DropDearerTwins(pool, level, cut, context)
+    local bestList,byKey={},{}
+    for _,item in ipairs(pool) do if level(item)>=cut then bestList[#bestList+1]=item end end
+    for _,item in ipairs(bestList) do
+        local key=type(item.sellPrice)=="number" and item.sellPrice>0 and self:PowerKey(item,level(item))
+        if key then byKey[key]=byKey[key] or {}; table.insert(byKey[key],item) end
+    end
+    for _,twins in pairs(byKey) do
+        if #twins>1 then
+            local lvl=level(twins[1])
+            local others=0
+            for _,item in ipairs(bestList) do
+                if level(item)>=lvl and self:PowerKey(item,level(item))~=self:PowerKey(twins[1],lvl) then others=others+1 end
+            end
+            local needed=math.max(1,(twins[1].capacity or 1)-others)
+            if #twins>needed then
+                table.sort(twins,function(a,b)
+                    if a.sellPrice~=b.sellPrice then return a.sellPrice<b.sellPrice end
+                    return a.storage=="equipped" and b.storage~="equipped"
+                end)
+                local limit=twins[needed].sellPrice
+                for index=needed+1,#twins do
+                    local extra=twins[index]
+                    if extra.storage~="equipped" and extra.sellPrice-limit>=TWIN_MIN_GAP then
+                        local entry=self.bestItems[extra.guid or extra.link]
+                        if entry then entry[context]=nil end
+                    end
+                end
+            end
+        end
+    end
+end
+
 function BM:BuildBestItems(allItems)
     self.bestItems, self.incompleteCategories, self.poolCut = {}, {}, {}
     local groups={}
@@ -190,6 +242,7 @@ function BM:BuildBestItems(allItems)
                         self.bestItems[key][context]=true
                     end
                 end
+                self:DropDearerTwins(pool,level,cut,context)
             end
         end
     end
