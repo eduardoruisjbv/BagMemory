@@ -1,0 +1,6 @@
+package-as: BagMemory
+license-output: LICENSE
+ignore:
+    - .gitignore
+    - README.md
+    - CHANGELOG.md
