@@ -75,7 +75,34 @@ function BM:SetPieceObsolete(item)
     return level<=slotBest-(self.config.setTolerance or 25)
 end
 
+-- User policy: equipped heirlooms reserve their slots through level 50.
+-- Read worn quality live, including the final check immediately before sale.
+local heirloomSlots={
+    INVTYPE_HEAD={1},INVTYPE_NECK={2},INVTYPE_SHOULDER={3},INVTYPE_BODY={4},
+    INVTYPE_CHEST={5},INVTYPE_ROBE={5},INVTYPE_WAIST={6},INVTYPE_LEGS={7},
+    INVTYPE_FEET={8},INVTYPE_WRIST={9},INVTYPE_HAND={10},INVTYPE_FINGER={11,12},
+    INVTYPE_TRINKET={13,14},INVTYPE_CLOAK={15},INVTYPE_WEAPON={16,17},
+    INVTYPE_WEAPONMAINHAND={16},INVTYPE_WEAPONOFFHAND={17},INVTYPE_SHIELD={17},
+    INVTYPE_HOLDABLE={17},INVTYPE_2HWEAPON={16,17},INVTYPE_RANGED={16},INVTYPE_RANGEDRIGHT={16},
+}
+
+function BM:HeirloomCoversSlot(item)
+    local level=self:Call(UnitLevel,"player")
+    if type(level)~="number" or level>50 or not item.gear or item.quality==7 then return false end
+    local slots=heirloomSlots[item.equipLoc]
+    if not slots then return false end
+    local mainLink=self:Call(GetInventoryItemLink,"player",16)
+    local mainLoc=mainLink and select(9,self:CachedItemCall(C_Item.GetItemInfo,mainLink))
+    local twoHanded=mainLoc=="INVTYPE_2HWEAPON" and self:Call(GetInventoryItemQuality,"player",16)==7
+    -- Both ring/trinket positions must be reserved; a free partner still needs gear.
+    for _,slot in ipairs(slots) do
+        if not (slot==17 and twoHanded) and self:Call(GetInventoryItemQuality,"player",slot)~=7 then return false end
+    end
+    return true
+end
+
 function BM:Classify(item)
+    if self:IsItemProtected(item) then return "keep",L["Proteção manual neste personagem"] end
     if item.pending or not item.id or item.quality==nil then return "review",L["Dados do item ainda carregando"] end
     if item.storage=="equipped" then return "keep",L["Equipado: preservado e usado na comparação da categoria"] end
     -- Mission protection always precedes manual sale and value-based rules.
@@ -89,7 +116,24 @@ function BM:Classify(item)
         end
         return "keep",L["Item de missão protegido; necessidade ou destino ainda não confirmado"]
     end
-    if item.quality==7 then return "keep",L["Herança: sempre preservada"] end
+    if item.quality==7 then
+        local level=self:Call(UnitLevel,"player")
+        if type(level)=="number" and level>50 then
+            return "warbank",L["Herança após nível 50: guardar no banco do Bando de Guerra"]
+        end
+        return "keep",L["Herança: preservada até nível 50"]
+    end
+    if self:HeirloomCoversSlot(item) then
+        local rule=self.config.rules[item.id]
+        if rule=="keep" then return "keep",L["Proteção manual neste personagem"] end
+        if rule=="bank" then return "bank",L["Proteção manual: guardar no banco"] end
+        if item.questUnknown or item.refundable==nil then return "review",L["Dados de missão ou reembolso não confirmados"] end
+        if item.refundable then return "keep",L["Ainda pode ser reembolsado"] end
+        if item.locked or item.noValue or type(item.sellPrice)~="number" or item.sellPrice<=0 then
+            return "review",L["Slot reservado por herança; venda indisponível"]
+        end
+        return "sell",L["Lixo no leveling: slot reservado por herança até nível 50"]
+    end
     if item.gear and item.crafted then return "keep",L["Item fabricado: pode ser reforjado"] end
     if item.quality>=5 then return "keep",L["Lendário, artefato ou item especial"] end
     if item.questUnknown then return "review",L["Dados de missão não confirmados"] end

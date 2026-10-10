@@ -133,6 +133,8 @@ function BM:StopBankWork()
 end
 
 function BM:BankTransferDirection(item)
+    if self:IsItemProtected(item) then return end
+    if item.storage=="bag" and self:IsBankReturnProtected(item) then return end
     local active=self:ActiveBankType()
     local character=Enum.BankType and Enum.BankType.Character
     -- Marked items are deposited only into the character bank, never by accident

@@ -31,7 +31,7 @@ function BM:GearClassSuitable(item)
     local groups={ITEM_MOD_STRENGTH_SHORT={"str"},ITEM_MOD_AGILITY_SHORT={"agi"},ITEM_MOD_INTELLECT_SHORT={"int"},
         ITEM_MOD_AGI_STR_INT_SHORT={"agi","str","int"},ITEM_MOD_AGI_STR_SHORT={"agi","str"},
         ITEM_MOD_AGI_INT_SHORT={"agi","int"},ITEM_MOD_STR_INT_SHORT={"str","int"}}
-    local stats=item.stats or self:Call(C_Item.GetItemStats,item.link)
+    local stats=item.stats or self:CachedItemCall(C_Item.GetItemStats,item.link)
     if type(stats)~="table" then return nil end
     local hasPrimary,matches=false,false
     for stat,attributes in pairs(groups) do

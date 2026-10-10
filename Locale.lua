@@ -2,6 +2,19 @@
 local _, BM = ...
 local portuguese = GetLocale() == "ptBR"
 local english = {
+    ["Proteção removida: item %d."] = "Protection removed: item %d.",
+    ["Item %d protegido contra ações do BagMemory. Ctrl por 4 s remove a proteção."] = "Item %d protected from BagMemory actions. Hold Ctrl for 4 s to unlock.",
+    ["Item %d: não devolver ao banco até o próximo login ou /reload."] = "Item %d: do not return to the bank until the next login or /reload.",
+    ["P: proteção persistente contra ações do BagMemory."] = "P: persistent protection from BagMemory actions.",
+    ["T: não devolver ao banco até login ou /reload."] = "T: do not return to the bank until login or /reload.",
+    ["Ctrl: proteção temporária de banco. Ctrl por 4 s: proteger/desproteger este tipo de item."] = "Ctrl: temporary bank protection. Hold Ctrl for 4 s: protect/unprotect this item type.",
+    ["Item protegido. Segure Ctrl por 4 s para liberar."] = "Protected item. Hold Ctrl for 4 s to unlock.",
+    ["Herança após nível 50: guardar no banco do Bando de Guerra"] = "Heirloom after level 50: store in the Warband bank",
+    ["Herança: preservada até nível 50"] = "Heirloom: preserved through level 50",
+    ["Proteção manual: guardar no banco"] = "Manual protection: store in bank",
+    ["Dados de missão ou reembolso não confirmados"] = "Quest or refund data unconfirmed",
+    ["Slot reservado por herança; venda indisponível"] = "Slot reserved by an heirloom; sale unavailable",
+    ["Lixo no leveling: slot reservado por herança até nível 50"] = "Leveling junk: slot reserved by an heirloom through level 50",
     ["LEILÃO"] = "AUCTION",
     ["MISSÃO"] = "QUEST",
     ["BANCO DE GUERRA"] = "WARBAND BANK",

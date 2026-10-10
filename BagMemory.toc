@@ -3,12 +3,14 @@
 ## Notes: Clean bags. Your best gear, preserved.
 ## Notes-ptBR: Bag limpa. Seu melhor equipamento, preservado.
 ## Author: Eduardo Rui
-## Version: 0.4.0
+## Version: 0.4.3
 ## SavedVariables: BagMemoryDB
 ## IconTexture: Interface\Icons\INV_Misc_Bag_08
 
 Locale.lua
 Core.lua
+Protection.lua
+ItemCache.lua
 ClassRules.lua
 Inventory.lua
 Rules.lua

@@ -2,13 +2,14 @@ local _, BM = ...
 local L=BM.L
 
 function BM:StartQuestManually(item)
+    if self:IsItemProtected(item) then self:Print(L["Item protegido. Segure Ctrl por 4 s para liberar."]); return end
     if item.storage~="bag" or self.bankOpen or self.merchantOpen or self.ahOpen
         or InCombatLockdown() or GetCursorInfo() then
         self:Print(L["Use o item da mochila fora de combate, com banco, vendedor e AH fechados."]); return
     end
     self:Scan()
     local live=self.bySlot[item.bag..":"..item.slot]
-    if not live or not live.questStarter or live.link~=item.link or live.locked
+    if not live or self:IsItemProtected(live) or not live.questStarter or live.link~=item.link or live.locked
         or (item.guid and live.guid~=item.guid) then return end
     if self:IsFullAuto() then
         self.questAttempts[live.guid or live.link]=nil
@@ -54,7 +55,7 @@ function BM:TryQuestItems(selected)
     self.questAttempts=self.questAttempts or {}
     for _,item in ipairs(selected and {selected} or self.items) do
         local key=item.guid or item.link
-        if item.storage=="bag" and item.questStarter and item.action=="quest" and not item.locked
+        if not self:IsItemProtected(item) and item.storage=="bag" and item.questStarter and item.action=="quest" and not item.locked
             and not item.questUnknown and not item.tooltipUnknown and not self.questAttempts[key] then
             local live=self:Call(C_Container.GetContainerItemInfo,item.bag,item.slot)
             if live and live.hyperlink==item.link and not live.isLocked

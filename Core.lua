@@ -1,7 +1,7 @@
 local name, BM = ...
 local L=BM.L
 BM.name = name
-BM.version="0.3.0"
+BM.version="0.4.3"
 BM.items, BM.bySlot = {}, {}
 BM.waitingItems = {}
 BM.defaults = {margin=10, autoSell=true, sellGear=true, lowMarket=true,
@@ -122,6 +122,7 @@ function BM:Initialize()
     self.db, self.config = db, db.characters[key]
     for k,v in pairs(self.defaults) do if self.config[k]==nil then self.config[k]=v end end
     self.config.rules = self.config.rules or {}
+    self.config.quickProtection = self.config.quickProtection or {}
     self.config.history = self.config.history or {}
     -- Auction observations belong to this character/realm, never another realm.
     self.config.prices = self.config.prices or {}

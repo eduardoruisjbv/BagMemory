@@ -45,19 +45,19 @@ end
 function BM:ApplyBagIcon(button)
     if not self.config or not button then return end
     if button.IsVisible and not button:IsVisible() then return end
-    local bag,slot
-    if button.GetBankTabID and button.GetContainerSlotID then
-        bag,slot=button:GetBankTabID(),button:GetContainerSlotID()
-    elseif button.GetBagID and button.GetID then bag,slot=button:GetBagID(),button:GetID() end
-    if type(bag)~="number" or type(slot)~="number" then return end
+    local bag,slot=self:ProtectionButtonSlot(button)
+    if not bag then return end
     local inBags=bag>=0 and bag<=(NUM_TOTAL_EQUIPPED_BAG_SLOTS or 5)
-    local inBank=false
-    for _,id in ipairs(self.bankTabs or {}) do if id==bag then inBank=true; break end end
+    local inBank=self:IsProtectionBankBag(bag)
     if not inBags and not inBank then return end
+    self:WatchProtectionButton(button)
     local icon=button.icon or button.Icon or button.iconTexture
     if not icon or not icon.SetDesaturated then return end
     local item=self.bySlot[bag..":"..slot]
-    local info=C_Container.GetContainerItemInfo(bag,slot)
+    local info=self:Call(C_Container.GetContainerItemInfo,bag,slot)
+    if info and issecretvalue and (issecretvalue(info.itemID) or issecretvalue(info.hyperlink)
+        or issecretvalue(info.isLocked)) then return end
+    self:ApplyProtectionIcon(button,info and info.itemID,icon)
     -- Ignore a stale classification when Blizzard reuses a bag button.
     local same=item and info and item.id==info.itemID and item.link==info.hyperlink
     local junk=same and self.config.desaturate and item.action=="sell"
@@ -105,7 +105,8 @@ function BM:InstallTooltip()
             for _,item in ipairs(self.items) do
                 if item.storage~="equipped" and item.action
                     and ((data.guid and item.guid==data.guid) or (not data.guid and data.hyperlink and item.link==data.hyperlink)) then
-                    local color=actionColors[item.action] or {1,1,1}
+                      self:ProtectionTooltip(tooltip,item)
+                      local color=actionColors[item.action] or {1,1,1}
                     tooltip:AddLine("BagMemory: "..(actionNames[item.action] or item.action).." — "..(item.reason or "?"),
                         color[1],color[2],color[3],true)
                     if item.pvp then
@@ -119,6 +120,7 @@ function BM:InstallTooltip()
 end
 
 function BM:InstallBagHooks()
+    self:InstallProtectionHooks()
     self:InstallTooltip()
     self.bagFunctionHooks=self.bagFunctionHooks or {}
     for _,fn in ipairs({"OpenBag","CloseBag","OpenAllBags","CloseAllBags","ToggleAllBags"}) do
@@ -151,4 +153,5 @@ function BM:InstallBagHooks()
         self.bankIconHook=true
         hooksecurefunc(BankPanelItemButtonMixin,"Refresh",function(button) self:ApplyBagIcon(button) end)
     end
+    self:RefreshBagIcons()
 end

@@ -122,13 +122,14 @@ function BM:MarketResults(event,key)
 end
 
 function BM:PrepareAuction(item)
+    if self:IsItemProtected(item) then self:Print(L["Item protegido. Segure Ctrl por 4 s para liberar."]); return end
     if not self.ahOpen or not AuctionHouseFrame or not AuctionHouseFrame.SetPostItem then
         self:Print(L["Abra a Casa de Leilões para preparar um anúncio."]); return
     end
     self:StopMarketScan()
     self:Scan()
     local live=self.bySlot[item.bag..":"..item.slot]
-    if not live or live.link~=item.link or (item.guid and live.guid~=item.guid)
+    if not live or self:IsItemProtected(live) or live.link~=item.link or (item.guid and live.guid~=item.guid)
         or live.bound~=false or live.account or live.warband
         or not self:Call(C_AuctionHouse.IsSellItemValid,live.location) then
         self:Print(L["O item mudou ou não pode ser anunciado."]); return

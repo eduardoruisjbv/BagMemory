@@ -72,7 +72,7 @@ function BM:ReadTooltip(item)
             end
         end
     end
-    local stats=self:Call(C_Item.GetItemStats,item.link)
+    local stats=self:CachedItemCall(C_Item.GetItemStats,item.link)
     item.stats=stats
     if type(stats)=="table" then
         if stats.ITEM_MOD_PVP_POWER_SHORT or stats.ITEM_MOD_PVP_RESILIENCE_RATING_SHORT
@@ -82,7 +82,7 @@ function BM:ReadTooltip(item)
 end
 
 function BM:ReadItem(link, location, bag, slot, inventorySlot, container)
-    local info={self:Call(C_Item.GetItemInfo,link)}
+    local info={self:CachedItemCall(C_Item.GetItemInfo,link)}
     local item={link=link, location=location, bag=bag, slot=slot, inventorySlot=inventorySlot,
         id=container and container.itemID or self:Call(C_Item.GetItemID,location),
         count=container and container.stackCount or 1,
@@ -102,7 +102,7 @@ function BM:ReadItem(link, location, bag, slot, inventorySlot, container)
     item.equipLoc,item.icon,item.sellPrice=info[9],info[10],info[11]
     item.class,item.subclass,item.bindType=info[12],info[13],info[14]
     item.expansion,item.setID,item.reagent=info[15],info[16],info[17]
-    item.level=self:Call(C_Item.GetCurrentItemLevel,location) or self:Call(C_Item.GetDetailedItemLevelInfo,link)
+    item.level=self:CachedItemLevel(location,link,item.guid) or self:CachedItemCall(C_Item.GetDetailedItemLevelInfo,link)
     item.bound=self:Call(C_Item.IsBound,location)
     if item.bound==nil and container then item.bound=container.isBound end
     item.refundable=self:Call(C_Item.CanBeRefunded,location)
@@ -126,7 +126,7 @@ function BM:ReadItem(link, location, bag, slot, inventorySlot, container)
         item.questCompleted=self:Call(C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted,item.questID)
     end
     if self.questNeededItems and self.questNeededItems[item.id] then item.quest=true; item.questActive=true end
-    local _,spellID=self:Call(C_Item.GetItemSpell,item.link)
+    local _,spellID=self:CachedItemCall(C_Item.GetItemSpell,item.link)
     item.useSpell=spellID
     item.gear=(item.class==2 or item.class==4) and item.equipLoc and item.equipLoc~=""
         and not professionSlots[item.equipLoc]
