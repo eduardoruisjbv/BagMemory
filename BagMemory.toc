@@ -21,3 +21,4 @@ Simulate.lua
 Market.lua
 Bags.lua
 UI.lua
+Settings.lua

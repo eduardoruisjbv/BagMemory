@@ -1,9 +1,11 @@
 local _, BM = ...
 local L=BM.L
 local WHITE="Interface\\Buttons\\WHITE8X8"
-local colors={bg={0.055,0.06,0.065,0.98},panel={0.09,0.10,0.11,1},row={0.115,0.125,0.135,1},
-    text={0.93,0.90,0.83,1},muted={0.66,0.68,0.67,1},teal={0.29,0.82,0.75,1},
-    amber={0.94,0.69,0.35,1},border={0.27,0.28,0.27,1}}
+-- Match Mythic View's dark slate surfaces, warm-gold hierarchy, and restrained
+-- neutral text. Keep the controls native so the game skin supplies their states.
+local colors={bg={0.094,0.106,0.125,0.98},panel={0.098,0.098,0.098,1},row={0.12,0.12,0.12,1},
+    text={0.804,0.804,0.804,1},muted={0.549,0.549,0.549,1},accent={0.878,0.722,0.278,1},
+    amber={0.94,0.69,0.35,1},border={0.204,0.204,0.204,1}}
 local actions={sell=L["À VENDA"],keep=L["MANTER"],review=L["REVISAR"],auction=L["AVALIAR AH"],bank=L["GUARDAR NO BANCO"],quest=L["INICIA MISSÃO"],warbank=L["SUGERIR BANCO DE GUERRA"]}
 
 local function panel(parent,w,h,name)
@@ -22,16 +24,15 @@ local function label(parent,text,x,y,w,font)
 end
 local function tip(owner,title,text)
     GameTooltip:SetOwner(owner,"ANCHOR_RIGHT")
-    GameTooltip:AddLine(title,unpack(colors.teal))
+    GameTooltip:AddLine(title,colors.accent[1],colors.accent[2],colors.accent[3])
     GameTooltip:AddLine(text,0.9,0.88,0.82,true); GameTooltip:Show()
 end
 local function button(parent,text,x,y,w,callback,primary)
-    local f=CreateFrame("Button",nil,parent,"BackdropTemplate")
+    local f=CreateFrame("Button",nil,parent,"UIPanelButtonTemplate")
     f:SetSize(w,30); f:SetPoint("TOPLEFT",x,y)
-    f:SetBackdrop({bgFile=WHITE,edgeFile=WHITE,edgeSize=1})
-    f:SetBackdropColor(unpack(colors.row)); f:SetBackdropBorderColor(unpack(primary and colors.teal or colors.border))
-    f.caption=label(f,text,6,-8,w-12,"GameFontNormal"); f.caption:SetJustifyH("CENTER")
-    f:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+    f:SetText(text)
+    f.caption=f:GetFontString()
+    if primary then f.caption:SetTextColor(unpack(colors.accent)) end
     f:SetScript("OnClick",callback)
     f:SetScript("OnEnter",function() if f.tip then tip(f,text,f.tip) end end)
     f:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -40,7 +41,8 @@ end
 local function checkbox(parent,title,key,x,y,description,width)
     local f=CreateFrame("CheckButton",nil,parent,"UICheckButtonTemplate")
     f:SetPoint("TOPLEFT",x,y); f:SetSize(26,26)
-    label(f,title,29,-7,width or 214)
+    local caption=label(f,title,29,-7,width or 214)
+    caption:SetTextColor(unpack(colors.accent))
     f.key=key; f:SetScript("OnClick",function() BM:SetOption(key,f:GetChecked()==true) end)
     f:SetScript("OnEnter",function() tip(f,title,description) end)
     f:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -55,7 +57,8 @@ function BM:CreateUI()
     ui:SetScript("OnDragStop",ui.StopMovingOrSizing)
     ui:SetScale(math.min(1,(UIParent:GetWidth()-40)/1060,(UIParent:GetHeight()-40)/690))
     tinsert(UISpecialFrames,"BagMemoryFrame")
-    label(ui,"BagMemory",22,-20,600,"GameFontNormalLarge")
+    local title=label(ui,"BagMemory",22,-20,600,"GameFontNormalLarge")
+    title:SetTextColor(unpack(colors.accent))
     label(ui,L["Bag limpa. Seu melhor equipamento, preservado."],22,-48,740,"GameFontHighlight")
     local close=CreateFrame("Button",nil,ui,"UIPanelCloseButton"); close:SetPoint("TOPRIGHT",-5,-5)
     ui.full=button(ui,L["Modo: Semi Auto"],778,-19,240,function()
@@ -67,7 +70,7 @@ function BM:CreateUI()
     ui.context=label(ui,"",22,-77,1016,"GameFontHighlight")
     ui.season=label(ui,"",22,-100,1016); ui.season:SetTextColor(unpack(colors.muted))
     local rules=panel(ui,274,478); rules:SetPoint("TOPLEFT",22,-133)
-    label(rules,L["REGRAS DESTE PERSONAGEM"],14,-13,246,"GameFontNormal"):SetTextColor(unpack(colors.teal))
+    label(rules,L["REGRAS DESTE PERSONAGEM"],14,-13,246,"GameFontNormal"):SetTextColor(unpack(colors.accent))
     label(rules,L["Margem abaixo do ilvl equipado"],14,-43,246)
     ui.margin=label(rules,"",108,-76,70,"GameFontHighlight"); ui.margin:SetJustifyH("CENTER")
     button(rules,"−",14,-68,68,function() self:SetOption("margin",math.max(1,self.config.margin-1)) end)
@@ -112,8 +115,8 @@ function BM:CreateUI()
     end)
     ui.checks[#ui.checks+1]=checkbox(ui,L["Permitir venda de itens do Bando de Guerra"],
         "allowWarbandSale",316,-198,L["Ignora somente a proteção de vínculo ao Bando de Guerra/conta. O item segue as regras normais de venda; missões, heranças, melhores peças e proteções manuais continuam preservados."],302)
-    label(ui,"ITEM / ILVL PVE · PVP",324,-225,310,"GameFontNormal"):SetTextColor(unpack(colors.teal))
-    label(ui,L["DESTINO E MOTIVO"],634,-225,398,"GameFontNormal"):SetTextColor(unpack(colors.teal))
+    label(ui,"ITEM / ILVL PVE · PVP",324,-225,310,"GameFontNormal"):SetTextColor(unpack(colors.accent))
+    label(ui,L["DESTINO E MOTIVO"],634,-225,398,"GameFontNormal"):SetTextColor(unpack(colors.accent))
     ui.rows={}; ui.offset=0
     local list=panel(ui,720,324); list:SetPoint("TOPLEFT",316,-248)
     list:EnableMouseWheel(true)
@@ -136,10 +139,10 @@ function BM:CreateUI()
             if row.item.storage=="equipped" then GameTooltip:SetInventoryItem("player",row.item.inventorySlot)
             elseif row.item.storage=="bag" or row.item.liveBank then GameTooltip:SetBagItem(row.item.bag,row.item.slot)
             else GameTooltip:SetHyperlink(row.item.link) end
-            GameTooltip:AddLine("BagMemory: "..row.item.reason,0.29,0.82,0.75,true)
+            GameTooltip:AddLine("BagMemory: "..row.item.reason,colors.accent[1],colors.accent[2],colors.accent[3],true)
             local quote=self:GetPrice(row.item)
             if quote then GameTooltip:AddLine("AH: "..self:Money(quote)..L[" por unidade (cotação, não venda garantida)"],0.9,0.88,0.82,true) end
-            GameTooltip:AddLine(L["Clique: selecionar. Botão direito: guardar no banco. Shift+clique: link no chat."],0.66,0.68,0.67,true)
+            GameTooltip:AddLine(L["Clique: selecionar. Botão direito: guardar no banco. Shift+clique: link no chat."],colors.muted[1],colors.muted[2],colors.muted[3],true)
             GameTooltip:Show()
         end)
         row:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -215,7 +218,7 @@ function BM:RefreshUI()
             local source=item.storage=="bank" and L["Banco"] or item.storage=="equipped" and L["Vestido"] or L["Mochila"]
             row.level:SetText(source.." · "..(item.gear and string.format("PvE %s · PvP %s",item.level or "?",item.pvpUnknown and "revisar" or (item.pvpLevel or item.level or "?"))
                 or "NPC: "..self:Money((item.sellPrice or 0)*item.count)))
-            row.action:SetText(actions[item.action]); row.action:SetTextColor(unpack(item.action=="sell" and colors.amber or colors.teal))
+            row.action:SetText(actions[item.action]); row.action:SetTextColor(unpack(item.action=="sell" and colors.amber or colors.accent))
             row.reason:SetText(item.reason)
         end
     end
