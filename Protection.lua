@@ -89,7 +89,10 @@ function BM:ProtectBankReturn(id)
         or self.temporaryBankProtection[id] then return end
     self.temporaryBankProtection[id] = true
     self:Print(string.format(L["Item %d: não devolver ao banco até o próximo login ou /reload."],id))
-    self:ProtectionChanged()
+    -- Only bank deposits read this flag, and each transfer re-checks it live
+    -- (BankTransferDirection). Do not cancel vendor sales or quest work for it.
+    self:RefreshBagIcons()
+    if self.bankOpen then self:ScheduleScan("ITEM_PROTECTION",true) end
 end
 
 function BM:ProtectionPickup(bag,slot)

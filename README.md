@@ -1,4 +1,4 @@
-# BagMemory 0.4.3 — beta para WoW Retail
+# BagMemory 0.4.4 — beta para WoW Retail
 
 **Bag limpa. Seu melhor equipamento, preservado.** Interface escura com detalhes turquesa, seguindo a direção visual do MuscleMemory.
 

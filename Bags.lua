@@ -46,10 +46,8 @@ function BM:ApplyBagIcon(button)
     if not self.config or not button then return end
     if button.IsVisible and not button:IsVisible() then return end
     local bag,slot=self:ProtectionButtonSlot(button)
+    -- ProtectionButtonSlot only returns bag or bank slots.
     if not bag then return end
-    local inBags=bag>=0 and bag<=(NUM_TOTAL_EQUIPPED_BAG_SLOTS or 5)
-    local inBank=self:IsProtectionBankBag(bag)
-    if not inBags and not inBank then return end
     self:WatchProtectionButton(button)
     local icon=button.icon or button.Icon or button.iconTexture
     if not icon or not icon.SetDesaturated then return end
@@ -105,8 +103,8 @@ function BM:InstallTooltip()
             for _,item in ipairs(self.items) do
                 if item.storage~="equipped" and item.action
                     and ((data.guid and item.guid==data.guid) or (not data.guid and data.hyperlink and item.link==data.hyperlink)) then
-                      self:ProtectionTooltip(tooltip,item)
-                      local color=actionColors[item.action] or {1,1,1}
+                    self:ProtectionTooltip(tooltip,item)
+                    local color=actionColors[item.action] or {1,1,1}
                     tooltip:AddLine("BagMemory: "..(actionNames[item.action] or item.action).." — "..(item.reason or "?"),
                         color[1],color[2],color[3],true)
                     if item.pvp then

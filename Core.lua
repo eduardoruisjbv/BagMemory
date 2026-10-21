@@ -1,7 +1,7 @@
 local name, BM = ...
 local L=BM.L
 BM.name = name
-BM.version="0.4.3"
+BM.version="0.4.4"
 BM.items, BM.bySlot = {}, {}
 BM.waitingItems = {}
 BM.defaults = {margin=10, autoSell=true, sellGear=true, lowMarket=true,

@@ -2,6 +2,10 @@
 local _, BM = ...
 local portuguese = GetLocale() == "ptBR"
 local english = {
+    ["Configure aqui as regras deste personagem. Digite /bm para abrir a janela de revisão e gerenciamento de itens. O Full Auto continua sendo uma opção separada que exige confirmação explícita."] = "Configure character-specific rules here. Type /bm to open the item review and management window. Full Auto remains a separate opt-in that requires explicit confirmation.",
+    ["Automação"] = "Automation",
+    ["Proteção de itens"] = "Item protection",
+    ["Mercado e aparência"] = "Market and appearance",
     ["Proteção removida: item %d."] = "Protection removed: item %d.",
     ["Item %d protegido contra ações do BagMemory. Ctrl por 4 s remove a proteção."] = "Item %d protected from BagMemory actions. Hold Ctrl for 4 s to unlock.",
     ["Item %d: não devolver ao banco até o próximo login ou /reload."] = "Item %d: do not return to the bank until the next login or /reload.",
@@ -12,7 +16,6 @@ local english = {
     ["Herança após nível 50: guardar no banco do Bando de Guerra"] = "Heirloom after level 50: store in the Warband bank",
     ["Herança: preservada até nível 50"] = "Heirloom: preserved through level 50",
     ["Proteção manual: guardar no banco"] = "Manual protection: store in bank",
-    ["Dados de missão ou reembolso não confirmados"] = "Quest or refund data unconfirmed",
     ["Slot reservado por herança; venda indisponível"] = "Slot reserved by an heirloom; sale unavailable",
     ["Lixo no leveling: slot reservado por herança até nível 50"] = "Leveling junk: slot reserved by an heirloom through level 50",
     ["LEILÃO"] = "AUCTION",

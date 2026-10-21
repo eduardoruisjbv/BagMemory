@@ -123,17 +123,6 @@ function BM:Classify(item)
         end
         return "keep",L["Herança: preservada até nível 50"]
     end
-    if self:HeirloomCoversSlot(item) then
-        local rule=self.config.rules[item.id]
-        if rule=="keep" then return "keep",L["Proteção manual neste personagem"] end
-        if rule=="bank" then return "bank",L["Proteção manual: guardar no banco"] end
-        if item.questUnknown or item.refundable==nil then return "review",L["Dados de missão ou reembolso não confirmados"] end
-        if item.refundable then return "keep",L["Ainda pode ser reembolsado"] end
-        if item.locked or item.noValue or type(item.sellPrice)~="number" or item.sellPrice<=0 then
-            return "review",L["Slot reservado por herança; venda indisponível"]
-        end
-        return "sell",L["Lixo no leveling: slot reservado por herança até nível 50"]
-    end
     if item.gear and item.crafted then return "keep",L["Item fabricado: pode ser reforjado"] end
     if item.quality>=5 then return "keep",L["Lendário, artefato ou item especial"] end
     if item.questUnknown then return "review",L["Dados de missão não confirmados"] end
@@ -165,6 +154,16 @@ function BM:Classify(item)
     end
     if item.storage=="bank" and not self.bankValidated then
         return "review",L["Registro do banco: abra o banco para atualizar a classificação"]
+    end
+    -- Heirloom-reserved slots override best-item, appearance and upgrade checks,
+    -- but only after the hard protections above (crafted, legendary, quest and
+    -- tooltip data, binding/refund, Warband/account, trade window, saved sets).
+    if self:HeirloomCoversSlot(item) then
+        if self.config.rules[item.id]=="bank" then return "bank",L["Proteção manual: guardar no banco"] end
+        if item.locked or item.noValue or type(item.sellPrice)~="number" or item.sellPrice<=0 then
+            return "review",L["Slot reservado por herança; venda indisponível"]
+        end
+        return "sell",L["Lixo no leveling: slot reservado por herança até nível 50"]
     end
     if item.gear and item.classSuitable==false then
         if item.sellPrice==nil then return "review",L["Equipamento incompatível; valor de venda não confirmado"] end

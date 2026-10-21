@@ -1,3 +1,10 @@
+# 0.4.4 — Correções de proteção e cache
+
+- A regra de leveling que vende peças de slot coberto por herança agora respeita todas as proteções fixas (lendários, criados, Bando de Guerra, conjuntos de equipamento, vínculo desconhecido e banco não validado).
+- Segurar Ctrl sobre um item não interrompe mais vendas ou missões em andamento; a proteção temporária de banco só atualiza os ícones.
+- Cache de itens compartilhado v2: contagem correta de entradas, invalidação por item sem varrer o cache inteiro e nunca substitui uma versão mais nova carregada por outro addon.
+- Cabeçalhos e nota do painel de Configurações traduzidos conforme o idioma do cliente.
+
 # 0.4.3 — Proteção rápida e cache de itens
 
 - Adiciona proteção persistente por item e personagem, alternada ao segurar Ctrl por quatro segundos sobre um item.
