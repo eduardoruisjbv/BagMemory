@@ -160,6 +160,8 @@ function BM:Classify(item)
     -- tooltip data, binding/refund, Warband/account, trade window, saved sets).
     if self:HeirloomCoversSlot(item) then
         if self.config.rules[item.id]=="bank" then return "bank",L["Proteção manual: guardar no banco"] end
+        -- An unreadable equipment set leaves setItems partial; never sell on it.
+        if self.setsUnknown then return "review",L["Comparação incompleta; aguarde os dados dos equipamentos"] end
         if item.locked or item.noValue or type(item.sellPrice)~="number" or item.sellPrice<=0 then
             return "review",L["Slot reservado por herança; venda indisponível"]
         end
